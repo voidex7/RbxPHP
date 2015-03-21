@@ -1,11 +1,9 @@
 <?php
 /*
-	Auto Rank Promotion Bot made by Voiliax
 	-READ ME-
-	Create two .txt files for storing ROBLOSECURITY and token; 
-		to increase performance by not deriving them again when they're still usable.
-	The script will automatically update the files when ROBLOSECURITY or token is no longer usable.
-	Check out 'Login User Data' below and modify it to what you will use.
+	Create two .txt file for storing ROBLOSECURITY and Token.
+		To increase performance by not obtaining them again when they're still usable.
+	Look at `Login User Data` and modify it to what you will use.
 */
 
 // Login User Data
@@ -43,7 +41,7 @@ function getRS()
 	return $rs;
 }
 
-// [Function] Change User's Group Rank
+// [Function] Change Rank
 function changeRank($rs, $token) 
 {
 	global $group_id, $new_role_set_id, $target_user_id, $file_path_token;
@@ -62,7 +60,7 @@ function changeRank($rs, $token)
 	$resp_header_size = curl_getinfo($promote_user, CURLINFO_HEADER_SIZE);
 	$resp_header = substr($resp, 0, $resp_header_size);
 	$resp_body = substr($resp, $resp_header_size);
-	
+
 	if (preg_match('/GuestData/', $resp_header)) {
 		// RS invalid
 		$resp_body = changeRank( getRS(), $token );
@@ -78,5 +76,5 @@ function changeRank($rs, $token)
 	return $resp_body;
 }
 
-// Change user's group rank and echo results
+// Change rank and echo results
 echo changeRank($current_rs, $current_token);
