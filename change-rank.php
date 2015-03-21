@@ -2,15 +2,11 @@
 /*
 	Auto Rank Promotion Bot made by Voiliax
 	-READ ME-
-	Create two .txt files for storing ROBLOSECURITY and token. To increase performance by not deriving them again when they're still usable.
+	Create two .txt files for storing ROBLOSECURITY and token; 
+		to increase performance by not deriving them again when they're still usable.
 	The script will automatically update the files when ROBLOSECURITY or token is no longer usable.
 	Check out 'Login User Data' below and modify it to what you will use.
 */
-
-// Input
-$group_id         = $_GET['groupId'];
-$new_role_set_id  = $_GET['newRoleSetId'];
-$target_user_id   = $_GET['targetUserId'];
 
 // Login User Data
 $login_user       = 'username=&password=';
@@ -18,6 +14,11 @@ $file_path_rs     = 'rs.txt';
 $file_path_token  = 'token.txt';
 $current_rs       = file_get_contents($file_path_rs);
 $current_token    = file_get_contents($file_path_token);
+
+// Input
+$group_id         = $_GET['groupId'];
+$new_role_set_id  = $_GET['newRoleSetId'];
+$target_user_id   = $_GET['targetUserId'];
 
 // [Function] Get ROBLOSECRUITY
 function getRS()
@@ -61,7 +62,7 @@ function changeRank($rs, $token)
 	$resp_header_size = curl_getinfo($promote_user, CURLINFO_HEADER_SIZE);
 	$resp_header = substr($resp, 0, $resp_header_size);
 	$resp_body = substr($resp, $resp_header_size);
-
+	
 	if (preg_match('/GuestData/', $resp_header)) {
 		// RS invalid
 		$resp_body = changeRank( getRS(), $token );
