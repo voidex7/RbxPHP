@@ -86,7 +86,7 @@ function uploadAsset($rs)
 	// close upload_xml
 	curl_close($upload_xml);
 
-	// return avid
+	// return results
 	return $body;
 }
 
