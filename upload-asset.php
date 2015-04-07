@@ -76,11 +76,8 @@ function uploadAsset($rs)
 	
 	// check if RS is valid
 	if (preg_match('/HTTP\/1.1 302/', $header)) {
-		// get new RS
-		$body = uploadAsset( getRS() );
-	} else {
-		// error msg
-		$body = "XML is invalid/ID is invalid";
+		// get updated RS
+		$body = uploadAsset(getRS());
 	}
 
 	// close upload_xml
@@ -97,6 +94,6 @@ if ((int)($asset_id)) {
 	// upload asset and echo avid
 	echo uploadAsset($current_rs);
 } else {
-	// error msg
+	// error
 	echo "ID MUST BE INTEGER";
 }
