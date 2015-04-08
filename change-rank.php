@@ -1,18 +1,20 @@
 <?php
 /*
 	-READ ME-
-	Modify `login_user` and `file_name_rs` to what you will use.
+	Modify `login_user`, `file_name_rs`, and 'file_name_token' to what you will use.
 	* The script will automatically create a .txt file of `file_name_rs`, which will store the user's ROBLOSECURITY.
-	* This is to avoid continuously logging in, which will activate CAPTCHA protection and break the script.
-	* And also to increase performance by not obtaining ROBLOSECURITY again when it's still usable.
+	** This is to avoid continuously logging in, which will activate CAPTCHA protection and break the script.
+	** And also to increase performance by not obtaining ROBLOSECURITY again when it's still usable.
+	* The script will automatically create a .txt file of `file_name_token`, which will store the user's TOKEN.
+	** To increase performance by not obtaining ROBLOSECURITY again when it's still usable.
 */
 
 // login user data
-$login_user    = 'username=&password=';
+$login_user       = 'username=&password=';
 $file_name_rs     = 'rs.txt';
 $file_name_token  = 'token.txt';
-$current_rs       = (file_exists($file_name_rs) ? file_get_contents($file_name_rs) : '');
-$current_token    = (file_exists($file_name_token) ? file_get_contents($file_name_token) : '');
+$stored_rs        = (file_exists($file_name_rs) ? file_get_contents($file_name_rs) : '');
+$stored_token     = (file_exists($file_name_token) ? file_get_contents($file_name_token) : '');
 
 // input data
 $group_id         = $_GET['groupId'];
@@ -22,13 +24,12 @@ $target_user_id   = $_GET['targetUserId'];
 
 // --------------------------------------
 
-// [Function] Get ROBLOSECURITY
-function getRS()
-{
+// [function] get roblosecurity
+function getRS() {
 	// globalize vars
 	global $login_user, $file_name_rs;
 
-	// setup get_cookies request
+	// set up get_cookies request
 	$get_cookies = curl_init('https://www.roblox.com/newlogin');
 	curl_setopt_array($get_cookies,
 		array(
@@ -52,13 +53,12 @@ function getRS()
 	return $rs;
 }
 
-// [Function] Change Rank
-function changeRank($rs, $token) 
-{
+// [function] change rank
+function changeRank($rs, $token) {
 	// globalize vars
-	global $group_id, $new_role_set_id, $target_user_id, $file_name_token;
+	global $stored_rs, $stored_token, $group_id, $new_role_set_id, $target_user_id, $file_name_token;
 	
-	// setup promote_user request
+	// set up promote_user request
 	$promote_user = curl_init("http://www.roblox.com/groups/api/change-member-rank?groupId=$group_id&newRoleSetId=$new_role_set_id&targetUserId=$target_user_id");
 	curl_setopt_array($promote_user,
 		array(
@@ -75,15 +75,19 @@ function changeRank($rs, $token)
 	$header = substr($response, 0, $header_size);
 	$body = substr($response, $header_size);
 
-	// check if RS/Token is valid
-	if (preg_match('/HTTP\/1.1 302/', $header)) {
-		// get updated RS
-		$body = changeRank(getRS(), $token);
-	} else if (preg_match('/HTTP\/1.1 403/', $header)) {
-		// get updated Token
-		$new_token = (preg_match('/X-CSRF-TOKEN: (\S+)/', $header, $matches) ? $matches[1] : '');
-		file_put_contents($file_name_token, $new_token, true);
-		$body = changeRank($rs, $new_token);
+	// check if roblosecurity/token is valid
+	if (!preg_match('/HTTP\/1.1 200/', $header)) {
+		if (preg_match('/HTTP\/1.1 302/', $header) && $rs == $stored_rs) {
+			// get updated roblosecurity
+			$body = changeRank(getRS(), $token);
+		} else if (preg_match('/HTTP\/1.1 403/', $header) && $token == $stored_token) {
+			// get updated token
+			$new_token = (preg_match('/X-CSRF-TOKEN: (\S+)/', $header, $matches) ? $matches[1] : '');
+			file_put_contents($file_name_token, $new_token, true);
+			$body = changeRank($rs, $new_token);
+		} else {
+			$body = "error: invalid input/forbidden attempt";
+		}
 	}
 
 	// close promote_user
@@ -96,10 +100,5 @@ function changeRank($rs, $token)
 
 // --------------------------------------
 
-if ((int)($group_id) && (int)($new_role_set_id) && (int)($target_user_id)) {
-	// change rank
-	echo changeRank($current_rs, $current_token);
-} else {
-	// error
-	echo "Input must be integers";
-}
+// change rank and echo results
+echo changeRank($stored_rs, $stored_token);

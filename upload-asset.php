@@ -3,14 +3,14 @@
 	-READ ME-
 	Modify `login_user` and `file_name_rs` to what you will use.
 	* The script will automatically create a .txt file of `file_name_rs`, which will store the user's ROBLOSECURITY.
-	* This is to avoid continuously logging in, which will activate CAPTCHA protection and break the script.
-	* And also to increase performance by not obtaining ROBLOSECURITY again when it's still usable.
+	** This is to avoid continuously logging in, which will activate CAPTCHA protection and break the script.
+	** And also to increase performance by not obtaining ROBLOSECURITY again when it's still usable.
 */
 
 // login user data
 $login_user    = 'username=&password=';
 $file_name_rs  = 'rs.txt';
-$current_rs    = (file_exists($file_name_rs) ? file_get_contents($file_name_rs) : '');
+$stored_rs     = (file_exists($file_name_rs) ? file_get_contents($file_name_rs) : '');
 
 // input data
 $asset_id   = $_GET['id'];
@@ -20,13 +20,13 @@ $asset_xml  = (ord(substr($post_body,0,1)) == 31 ? gzinflate(substr($post_body,1
 
 // --------------------------------------
 
-// [Function] Get ROBLOSECURITY
+// [function] get roblosecurity
 function getRS()
 {
 	// globalize vars
 	global $login_user, $file_name_rs;
 
-	// setup get_cookies request
+	// set up get_cookies request
 	$get_cookies = curl_init('https://www.roblox.com/newlogin');
 	curl_setopt_array($get_cookies,
 		array(
@@ -50,13 +50,13 @@ function getRS()
 	return $rs;
 }
 
-// [Function] Upload Asset
+// [function] upload asset
 function uploadAsset($rs)
 {
 	// globalize vars
-	global $asset_id, $asset_xml;
+	global $stored_rs, $asset_id, $asset_xml;
 	
-	// setup upload_xml request
+	// set up upload_xml request
 	$upload_xml = curl_init("http://www.roblox.com/Data/Upload.ashx?assetid=$asset_id");
 	curl_setopt_array($upload_xml,
 		array(
@@ -74,10 +74,15 @@ function uploadAsset($rs)
 	$header = substr($response, 0, $header_size);
 	$body = substr($response, $header_size);
 	
-	// check if RS is valid
-	if (preg_match('/HTTP\/1.1 302/', $header)) {
-		// get updated RS
-		$body = uploadAsset(getRS());
+	// check if roblosecurity is valid
+	if (!preg_match('/HTTP\/1.1 200/', $header)) {
+		if (preg_match('/HTTP\/1.1 302/', $header) && $rs == $stored_rs) {
+			// get updated roblosecurity
+			$body = uploadAsset(getRS());
+		} else {
+			// error
+			$body = "error: invalid xml/invalid id";
+		}
 	}
 
 	// close upload_xml
@@ -90,10 +95,5 @@ function uploadAsset($rs)
 
 // --------------------------------------
 
-if ((int)($asset_id)) {
-	// upload asset and echo avid
-	echo uploadAsset($current_rs);
-} else {
-	// error
-	echo "ID MUST BE INTEGER";
-}
+// upload asset and echo avid
+echo uploadAsset($stored_rs);
