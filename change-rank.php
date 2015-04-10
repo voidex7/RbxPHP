@@ -6,7 +6,7 @@
 	** This is to avoid continuously logging in, which will activate CAPTCHA protection and break the script.
 	** And also to increase performance by not obtaining ROBLOSECURITY again when it's still usable.
 	* The script will automatically create a .txt file of `file_name_token`, which will store the user's TOKEN.
-	** To increase performance by not obtaining ROBLOSECURITY again when it's still usable.
+	** To increase performance by not obtaining TOKEN again when it's still usable.
 */
 
 // login user data
