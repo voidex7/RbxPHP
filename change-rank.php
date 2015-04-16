@@ -77,16 +77,19 @@ function changeRank($rs, $token) {
 
 	// check if roblosecurity/token is valid
 	if (!preg_match('/HTTP\/1.1 200/', $header)) {
-		if (preg_match('/HTTP\/1.1 302/', $header) && $rs == $stored_rs) {
-			// get updated roblosecurity
-			$body = changeRank(getRS(), $token);
-		} else if (preg_match('/HTTP\/1.1 403/', $header) && $token == $stored_token) {
+		if (preg_match('/HTTP\/1.1 403/', $header) && ($rs != $stored_rs || $token == $stored_token)) {
 			// get updated token
 			$new_token = (preg_match('/X-CSRF-TOKEN: (\S+)/', $header, $matches) ? $matches[1] : '');
 			file_put_contents($file_name_token, $new_token, true);
 			$body = changeRank($rs, $new_token);
 		} else {
 			$body = "error: invalid input/forbidden attempt";
+		}
+	} else {
+		$body_array = json_decode($body, true);
+		if ($body_array['success'] == false && $rs == $stored_rs) {
+			// get updated roblosecurity
+			$body = changeRank(getRS(), $token);
 		}
 	}
 

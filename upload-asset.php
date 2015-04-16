@@ -17,6 +17,7 @@ $asset_id   = $_GET['id'];
 $post_body  = file_get_contents('php://input');
 $asset_xml  = (ord(substr($post_body,0,1)) == 31 ? gzinflate(substr($post_body,10,-8)) : $post_body); // if gzipped, decode
 
+// <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4"></roblox>
 
 // --------------------------------------
 
