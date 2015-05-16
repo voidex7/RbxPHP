@@ -83,5 +83,5 @@ function changeRank($rs, $token) {
 // --------------------------------------
 
 
-// Change User's Rank
+// Change User's Rank & Echo Results
 echo changeRank($stored_rs, $stored_token);
