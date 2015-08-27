@@ -7,23 +7,16 @@
 	** And also to increase performance by not obtaining ROBLOSECURITY again when it's still usable.
 */
 
-// Login User Data
 $login_user    = 'username=&password=';
 $file_name_rs  = 'rs.txt';
 $stored_rs     = (file_exists($file_name_rs) ? file_get_contents($file_name_rs) : '');
 
-// Input
 $user_id = $_GET['userId'];
-
-// Output
-$inventory = array();
+$limiteds = array();
 $total_rap = 0;
-
 
 // --------------------------------------
 
-
-// [Function] Get `ROBLOSECURITY` Cookie
 function getRS() {
 	global $login_user, $file_name_rs;
 
@@ -44,7 +37,6 @@ function getRS() {
 	return $rs;
 }
 
-// [Function] Get Inventory's Page Data
 function getInvPage($rs, $filter, $page) {
 	global $user_id;
 
@@ -59,7 +51,6 @@ function getInvPage($rs, $filter, $page) {
 	return $get_page_data;
 }
 
-// [Function] Organize Item
 function organizeItem($item_data) {
 	global $total_rap;
 
@@ -75,20 +66,14 @@ function organizeItem($item_data) {
 
 	return array(
 		'Name' => $name,
-		'AssetId' => $id,
+		'AssetID' => $id,
 		'Serial' => ($is_ulimited ? $serial : 'NA'),
 		'SerialTotal' => ($is_ulimited ? $total_serial : "NA"),
 		'RAP' => $rap
 	);			
 }
 
-
-
 // --------------------------------------------------------------------
-
-
-// [Operation] Start Deriving Inventory
-
 
 $requests_handler = curl_multi_init();
 $requests = array();
@@ -110,7 +95,7 @@ foreach (array($hats_data, $gears_data, $faces_data) as $filter => $filter_data)
 	if ($filter_data['msg'] == 'Inventory retreived!') {
 		$count = $filter_data['data']['totalNumber'];
 		foreach ($filter_data['data']['InventoryItems'] as $index => $item_data) {
-		    array_push($inventory, organizeItem($item_data));
+		    array_push($limiteds, organizeItem($item_data));
 		}
 		for ($page = 2; $page <= ceil($count/14); $page++) {
 			$request = getInvPage($rs, $filter, $page);
@@ -129,7 +114,7 @@ do {
 foreach ($requests as $index => $request) {
 	$page_data = json_decode(curl_multi_getcontent($request), true);
 	foreach ($page_data['data']['InventoryItems'] as $index => $item_data) {
-		array_push($inventory, organizeItem($item_data));
+		array_push($limiteds, organizeItem($item_data));
 	}
 	curl_multi_remove_handle($requests_handler, $request);
 }
@@ -137,15 +122,11 @@ foreach ($requests as $index => $request) {
 
 curl_multi_close($requests_handler);
 
-
-
 // --------------------------------------------------------------------
 
-
-// Echo Inventory & TotalRAP
 echo json_encode(
 	array(
 		'TotalRAP' => $total_rap,
-		'Inventory' => $inventory
+		'Limiteds' => $limiteds
 	)
 );

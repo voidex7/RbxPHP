@@ -9,23 +9,18 @@
 	** To increase performance by not obtaining TOKEN again when it's still usable.
 */
 
-// Login User Data
 $login_user       = 'username=&password=';
 $file_name_rs     = 'rs.txt';
 $file_name_token  = 'token.txt';
 $stored_rs        = (file_exists($file_name_rs) ? file_get_contents($file_name_rs) : '');
 $stored_token     = (file_exists($file_name_token) ? file_get_contents($file_name_token) : '');
 
-// Input
 $group_id         = $_GET['groupId'];
 $new_role_set_id  = $_GET['newRoleSetId'];
 $target_user_id   = $_GET['targetUserId'];
 
-
 // --------------------------------------
 
-
-// [Function] Get `ROBLOSECURITY` Cookie
 function getRS() {
 	global $login_user, $file_name_rs;
 
@@ -46,7 +41,6 @@ function getRS() {
 	return $rs;
 }
 
-// [Function] Change User's Rank
 function changeRank($rs, $token) {
 	global $stored_rs, $stored_token, $group_id, $new_role_set_id, $target_user_id, $file_name_token;
 	
@@ -79,9 +73,6 @@ function changeRank($rs, $token) {
 	return $body;
 }
 
-
 // --------------------------------------
 
-
-// Change User's Rank & Echo Results
 echo changeRank($stored_rs, $stored_token);
