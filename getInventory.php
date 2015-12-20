@@ -2,8 +2,11 @@
 
 
 /*
+	NOTE: This is for ROBLOX's old inventory which used __postback. It will not work anymore, but feel free to read and learn.
+	NOTE2: The new inventory uses JSON which is very easy to use.
+	--
 	Gets user's whole inventory. Paramaters: userId and category
-	category includes: Heads, Faces, Gears, Hats, TShirts, Shirts, Pants, Decals, Models, PLugins, Animations, Places, GamePasses, Audio, Badges, LeftArms
+	Category includes: Heads, Faces, Gears, Hats, TShirts, Shirts, Pants, Decals, Models, PLugins, Animations, Places, GamePasses, Audio, Badges, LeftArms
 		RightArms, LeftLegs, RightLegs, Torsos, Packages
 */
 

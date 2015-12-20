@@ -5,6 +5,8 @@
 	* The script will automatically create a .txt file of `file_name_rs`, which will store the user's ROBLOSECURITY.
 	** This is to avoid continuously logging in, which will activate CAPTCHA protection and break the script.
 	** And also to increase performance by not obtaining ROBLOSECURITY again when it's still usable.
+
+	NOTE: add &json=1 to the upload URL line 49 for it to return an AssetVersionID, default: only AssetID
 */
 
 $login_user    = 'username=&password=';
@@ -15,7 +17,7 @@ $asset_id   = $_GET['id'];
 $post_body  = file_get_contents('php://input');
 $asset_xml  = (ord(substr($post_body,0,1)) == 31 ? gzinflate(substr($post_body,10,-8)) : $post_body); // if gzipped, decode
 
-// <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4"></roblox>
+// XML Sample (Use for testing): <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4"></roblox>
 
 // ----------------------------------------------
 
