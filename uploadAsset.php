@@ -3,9 +3,9 @@
 $login_user    = 'username=&password=';
 $file_name_rs  = 'rs.txt';
 $stored_rs     = (file_exists($file_name_rs) ? file_get_contents($file_name_rs) : '');
-$asset_id   = $_GET['id'];
-$post_body  = file_get_contents('php://input');
-$asset_xml  = (ord(substr($post_body,0,1)) == 31 ? gzinflate(substr($post_body,10,-8)) : $post_body);
+$asset_id      = $_GET['id'];
+$post_body     = file_get_contents('php://input');
+$asset_xml     = (ord(substr($post_body,0,1)) == 31 ? gzinflate(substr($post_body,10,-8)) : $post_body);
 // general example of ROBLOX XML: <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4"></roblox>
 // XML for localscript: <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4"><Item class="LocalScript"><Properties><ProtectedString name="Source">[SOURCEHERE]</ProtectedString></Properties></Item></roblox>
 
